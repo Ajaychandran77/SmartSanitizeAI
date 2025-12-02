@@ -1,0 +1,35 @@
+name: Unzip Project
+
+on:
+  push:
+    paths:
+      - "SmartSanitizeAI.zip"
+
+jobs:
+  unzip:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v3
+      
+      - name: Install unzip
+        run: sudo apt-get install unzip
+      
+      - name: Extract ZIP
+        run: unzip SmartSanitizeAI.zip -d extracted_files
+
+      - name: Move extracted files to repo root
+        run: |
+          shopt -s dotglob
+          mv extracted_files/* .
+
+      - name: Cleanup
+        run: rm -rf extracted_files SmartSanitizeAI.zip
+
+      - name: Commit extracted files
+        run: |
+          git config user.name "github-actions"
+          git config user.email "actions@github.com"
+          git add .
+          git commit -m "Extract ZIP contents"
+          git push
